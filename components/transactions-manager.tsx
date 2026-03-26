@@ -1,7 +1,7 @@
 "use client";
 
 import { money } from "@/lib/format";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Category = { id: string; name: string };
 type Transaction = {
@@ -39,7 +39,7 @@ export function TransactionsManager() {
     return p.toString();
   }, [filters]);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -60,11 +60,11 @@ export function TransactionsManager() {
     setItems(tx.transactions);
     setCategories(cat.categories);
     setLoading(false);
-  }
+  }, [query]);
 
   useEffect(() => {
     void load();
-  }, [query]);
+  }, [load]);
 
   async function createTransaction(formData: FormData) {
     const payload = {

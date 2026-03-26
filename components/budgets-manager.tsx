@@ -1,7 +1,7 @@
 "use client";
 
 import { money } from "@/lib/format";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Budget = {
   id: string;
@@ -24,7 +24,7 @@ export function BudgetsManager() {
 
   const query = useMemo(() => `month=${month}&year=${year}`, [month, year]);
 
-  async function load() {
+  const load = useCallback(async () => {
     const [budgetRes, catRes] = await Promise.all([
       fetch(`/api/budgets?${query}`),
       fetch("/api/categories"),
@@ -39,11 +39,11 @@ export function BudgetsManager() {
       const data = (await catRes.json()) as { categories: Category[] };
       setCategories(data.categories);
     }
-  }
+  }, [query]);
 
   useEffect(() => {
     void load();
-  }, [query]);
+  }, [load]);
 
   async function createBudget(formData: FormData) {
     const payload = {
